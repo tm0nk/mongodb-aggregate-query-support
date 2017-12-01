@@ -59,7 +59,9 @@ public class JongoBasedAggregateResultExtractor implements ResultsExtractor {
   public <T> List<T> extractResults(Iterable<DBObject> result, Class<T> unwrapTo) {
     LOGGER.trace(">>>> JongoBasedAggregateResultExtractor::extractResults(iterable)");
     List<T> retval = new ArrayList<>();
-    result.forEach(r -> retval.add(extractResults(r, unwrapTo)));
+    for (DBObject r : result) {
+      retval.add(extractResults(r, unwrapTo));
+    }
     LOGGER.trace("<<<< JongoBasedAggregateResultExtractor::extractResults(iterable)");
     return retval;
   }

@@ -45,8 +45,6 @@ import org.springframework.util.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,17 +75,16 @@ public abstract class AbstractAggregateQueryProvider implements QueryProvider, I
 
   protected StandardEvaluationContext context = new StandardEvaluationContext();
 
-  protected final BiFunction<AggregationStage, String, String> getQueryString = (aggregationStage, query) -> {
+  public String getQueryString(AggregationStage aggregationStage, String query) {
     if (aggregationStage.allowStage()) {
       String queryStringForStage = replacePlaceholders(query);
       if (!StringUtils.isEmpty(queryStringForStage)) {
         return String.format("{%s:%s}", aggregationStage.getAggregationType().getRepresentation(),
-                             queryStringForStage);
+                queryStringForStage);
       }
     }
     return NULL_STRING;
-  };
-
+  }
 
   AbstractAggregateQueryProvider(Method method, MongoParameterAccessor mongoParameterAccessor,
                                  ConvertingParameterAccessor convertingParameterAccessor) throws InvalidAggregationQueryException {
@@ -181,12 +178,6 @@ public abstract class AbstractAggregateQueryProvider implements QueryProvider, I
   public void remove() {
     initializeIterator();
     queryIterator.remove();
-  }
-
-  @Override
-  public void forEachRemaining(Consumer<? super String> action) {
-    initializeIterator();
-    queryIterator.forEachRemaining(action);
   }
 
   /**

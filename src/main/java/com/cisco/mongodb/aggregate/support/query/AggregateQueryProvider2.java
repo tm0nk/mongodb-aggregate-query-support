@@ -137,7 +137,7 @@ class AggregateQueryProvider2 extends AbstractAggregateQueryProvider {
           new ParameterPlaceholderReplacingContext(this, method,
                                                    new AggregationStage(AggregationType.from(annotation), conditionals,
                                                        conditionalMatchType),
-                                                   annotation, getQueryString);
+                                                   annotation);
       PipelineStageQueryProcessor queryProcessor = queryProcessorFactory.getQueryProcessor(context);
       String query = queryProcessor.getQuery(context);
       int index = queryProcessor.getOrder(context);

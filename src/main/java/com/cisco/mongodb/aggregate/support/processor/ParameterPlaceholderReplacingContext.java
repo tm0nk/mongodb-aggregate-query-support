@@ -22,13 +22,10 @@ package com.cisco.mongodb.aggregate.support.processor;
 import com.cisco.mongodb.aggregate.support.query.AbstractAggregateQueryProvider;
 import com.cisco.mongodb.aggregate.support.query.AbstractAggregateQueryProvider.AggregationStage;
 import com.cisco.mongodb.aggregate.support.query.QueryProvider;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * Created by rkolliva
@@ -40,8 +37,6 @@ public class ParameterPlaceholderReplacingContext implements QueryProcessorConte
 
   private final Annotation annotation;
 
-  private final BiFunction<AggregationStage, String, String> cbFn;
-
   private final AggregationStage aggregationStage;
 
   private final AbstractAggregateQueryProvider queryProvider;
@@ -50,12 +45,10 @@ public class ParameterPlaceholderReplacingContext implements QueryProcessorConte
 
   public ParameterPlaceholderReplacingContext(AbstractAggregateQueryProvider queryProvider,
                                               Method method, AggregationStage aggregationStage,
-                                              Annotation annotation,
-                                              BiFunction<AggregationStage, String, String> cbFn) {
+                                              Annotation annotation) {
 
     this.aggregationStage = aggregationStage;
     this.annotation = annotation;
-    this.cbFn = cbFn;
     this.queryProvider = queryProvider;
     this.method = method;
   }
@@ -66,14 +59,13 @@ public class ParameterPlaceholderReplacingContext implements QueryProcessorConte
     ParameterPlaceholderReplacingContext parentContext = (ParameterPlaceholderReplacingContext) pctx;
     this.aggregationStage = stage;
     this.annotation = annotation;
-    this.cbFn = parentContext.cbFn;
     this.queryProvider = (AbstractAggregateQueryProvider) parentContext.queryProvider();
     this.method = parentContext.method;
   }
 
   @Override
   public String getQuery() {
-    return cbFn.apply(aggregationStage, queryProvider.getQueryForStage(annotation));
+    return queryProvider.getQueryString(aggregationStage, queryProvider.getQueryForStage(annotation));
   }
 
   @Override

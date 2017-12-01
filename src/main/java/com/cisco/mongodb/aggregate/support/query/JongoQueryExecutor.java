@@ -115,7 +115,8 @@ public class JongoQueryExecutor implements MongoQueryExecutor {
   private Object getNonPageResults(QueryProvider queryProvider, Iterator resultsIterator,
                                    String resultKey) throws MongoQueryException {
     final List retval = new ArrayList();
-    resultsIterator.forEachRemaining(o -> {
+    while (resultsIterator.hasNext()) {
+      Object o = resultsIterator.next();
       LOGGER.debug("Got object {}", o.toString());
       Assert.isTrue(o instanceof Map);
       Map<String, Object> instanceMap = (Map) o;
@@ -132,7 +133,7 @@ public class JongoQueryExecutor implements MongoQueryExecutor {
       // deserialize. If not, then it is a generic type(Eg. String, Integer)
       // which does not need deserialization
       unmarshallResult(queryProvider, retval, valueObject);
-    });
+    }
     if (queryProvider.returnCollection()) {
       return retval;
     }

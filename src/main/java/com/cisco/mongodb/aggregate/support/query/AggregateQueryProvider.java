@@ -30,7 +30,6 @@ import org.springframework.util.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.function.Function;
 
 import static com.cisco.mongodb.aggregate.support.annotation.Conditional.*;
 import static com.cisco.mongodb.aggregate.support.query.AbstractAggregateQueryProvider.AggregationType.*;
@@ -112,6 +111,13 @@ public class AggregateQueryProvider extends AbstractAggregateQueryProvider {
     return aggregateAnnotation.isAllowDiskUse();
   }
 
+  private int aggregateCount(Object[] objects) {
+    if (objects != null) {
+      return objects.length;
+    }
+    return 0;
+  }
+
   @Override
   void createAggregateQuery() throws InvalidAggregationQueryException {
     // create the pipeline.
@@ -119,19 +125,6 @@ public class AggregateQueryProvider extends AbstractAggregateQueryProvider {
     int pipelineCount = 0;
     boolean outAnnotationPresent = false;
     boolean isPageable = this.mongoParameterAccessor.getPageable() != null;
-    final Function<Object, Integer> aggregateCounter = objects -> {
-      if (objects != null) {
-        if(objects instanceof Object []) {
-          return ((Object[])objects).length;
-        }
-        else {
-          return 1;
-        }
-      }
-      else {
-        return 0;
-      }
-    };
 
     LOGGER.debug("Extracting aggregate tests values");
     Project[] projections = aggregateAnnotation.project();
@@ -149,19 +142,19 @@ public class AggregateQueryProvider extends AbstractAggregateQueryProvider {
     Count [] counts = aggregateAnnotation.count();
     Skip [] skips = aggregateAnnotation.skip();
 
-    pipelineCount += aggregateCounter.apply(projections);
-    pipelineCount += aggregateCounter.apply(groups);
-    pipelineCount += aggregateCounter.apply(unwinds);
-    pipelineCount += aggregateCounter.apply(matches);
-    pipelineCount += aggregateCounter.apply(lookups);
-    pipelineCount += aggregateCounter.apply(limits);
-    pipelineCount += aggregateCounter.apply(buckets);
-    pipelineCount += aggregateCounter.apply(addFields);
-    pipelineCount += aggregateCounter.apply(replaceRoots);
-    pipelineCount += aggregateCounter.apply(sorts);
-    pipelineCount += aggregateCounter.apply(facets);
-    pipelineCount += aggregateCounter.apply(counts);
-    pipelineCount += aggregateCounter.apply(skips);
+    pipelineCount += aggregateCount(projections);
+    pipelineCount += aggregateCount(groups);
+    pipelineCount += aggregateCount(unwinds);
+    pipelineCount += aggregateCount(matches);
+    pipelineCount += aggregateCount(lookups);
+    pipelineCount += aggregateCount(limits);
+    pipelineCount += aggregateCount(buckets);
+    pipelineCount += aggregateCount(addFields);
+    pipelineCount += aggregateCount(replaceRoots);
+    pipelineCount += aggregateCount(sorts);
+    pipelineCount += aggregateCount(facets);
+    pipelineCount += aggregateCount(counts);
+    pipelineCount += aggregateCount(skips);
     if (isPageable) {
       pipelineCount += 2;
     }
@@ -332,7 +325,7 @@ public class AggregateQueryProvider extends AbstractAggregateQueryProvider {
 
   private void setupQuery(String[] queries, AggregationType aggType, Conditional[] conditional, int order, String query) {
     AggregationStage stage = new AggregationStage(aggType, conditional, ConditionalMatchType.ANY);
-    String queryString = getQueryString.apply(stage, query);
+    String queryString = getQueryString(stage, query);
     if(!StringUtils.isEmpty(queries[order]) && !NULL_STRING.equals(queryString)) {
       // this stage is not empty - replace contents only if the query string is not null
       LOGGER.warn("Two stages have the same order and the second one did not evaluate to a false condition");
