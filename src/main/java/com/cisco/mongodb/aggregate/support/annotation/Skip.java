@@ -25,8 +25,6 @@ import java.lang.annotation.*;
  * Created by camejavi
  * 2/20/17.
  *
- * @since 0.7.9
- *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

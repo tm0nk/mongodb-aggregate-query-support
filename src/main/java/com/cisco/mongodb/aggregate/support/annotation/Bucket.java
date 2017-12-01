@@ -25,7 +25,6 @@ import java.lang.annotation.*;
  * Created by rkolliva
  * 1/21/17.
  *
- * @since 0.7.2
  */
 
 @Target(ElementType.METHOD)

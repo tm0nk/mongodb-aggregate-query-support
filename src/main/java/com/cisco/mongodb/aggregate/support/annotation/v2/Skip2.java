@@ -29,8 +29,6 @@ import static com.cisco.mongodb.aggregate.support.annotation.Conditional.*;
  * Created by camejavi
  * 2/20/17.
  *
- * @since 0.7.9
- *
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

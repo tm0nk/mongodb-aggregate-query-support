@@ -28,7 +28,7 @@ import static com.cisco.mongodb.aggregate.support.annotation.Conditional.*;
 /**
  * Created by rkolliva
  * 4/1/17.
- * @since 0.7.11
+ *
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -51,7 +51,7 @@ public @interface FacetPipeline {
    * over the FacetPipelineStage
    *
    * @return - The string to use for this pipeline
-   * @since 0.7.12
+   *
    */
   String query() default "";
 
@@ -60,7 +60,6 @@ public @interface FacetPipeline {
    * in the facet or not.
    *
    * @return - A condition class that evaluates the conditional.
-   * @since 0.7.12
    *
    */
   Conditional[] condition() default {};
@@ -69,7 +68,6 @@ public @interface FacetPipeline {
    * An optional conditional type to determines whether all the conditions should be true or any one of them
    *
    * @return - A condition class that evaluates the conditional.
-   * @since 0.7.23
    *
    */
   ConditionalMatchType conditionMatchType() default ConditionalMatchType.ANY;
