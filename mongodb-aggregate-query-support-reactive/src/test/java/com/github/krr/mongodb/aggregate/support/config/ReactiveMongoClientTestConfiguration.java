@@ -19,9 +19,8 @@
 
 package com.github.krr.mongodb.aggregate.support.config;
 
-import com.mongodb.ServerAddress;
-import com.mongodb.async.client.MongoClientSettings;
-import com.mongodb.connection.ClusterSettings;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import de.flapdoodle.embed.mongo.Command;
@@ -43,9 +42,6 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.UnknownHostException;
-
-import static com.mongodb.connection.ClusterType.STANDALONE;
-import static java.util.Collections.singletonList;
 
 /**
  * Created by rkolliva
@@ -89,18 +85,14 @@ public class ReactiveMongoClientTestConfiguration {
 
   @Bean
   public MongoClient mongoClient() throws IOException {
-    ServerAddress serverAddress = getServerAddress();
-    MongoClientSettings settings = MongoClientSettings.builder()
-                                                      .clusterSettings(ClusterSettings.builder()
-                                                                                      .hosts(singletonList(serverAddress))
-                                                                                      .requiredClusterType(STANDALONE)
-                                                                                      .build()).build();
+    MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(getConnectionString()).build();
     return MongoClients.create(settings);
   }
 
-  private ServerAddress getServerAddress() throws UnknownHostException {
-    return new ServerAddress(mongodProcess.getConfig().net().getServerAddress(),
-                             mongodProcess.getConfig().net().getPort());
+  private ConnectionString getConnectionString() throws UnknownHostException {
+    return new ConnectionString("mongodb://" +
+            mongodProcess.getConfig().net().getServerAddress().getHostAddress() + ":" +
+            mongodProcess.getConfig().net().getPort());
   }
 
   @PreDestroy
